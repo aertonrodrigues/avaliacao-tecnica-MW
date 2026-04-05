@@ -1,0 +1,36 @@
+version: "3.9"
+
+# ...=================== Input de Dados ======================...
+
+# Dados do cliente
+x-client_data: &client_data
+  PHP_TZ: America/Recife
+  TZ: America/Recife
+
+# ...======================== Serviços =======================...
+
+services:
+  grafana-server:
+    image: gabemocan/swarm:grafana-7.5.17-mw
+    environment:
+      <<: *client_data
+    networks:
+      - mwsolucoes
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana:/var/lib/grafana
+    healthcheck:
+      test: curl -f localhost:3000/api/health || exit 1
+    deploy:
+      mode: global
+      update_config:
+        failure_action: rollback
+        order: start-first
+
+volumes:
+  grafana:
+
+networks:
+  mwsolucoes:
+    external: true

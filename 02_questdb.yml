@@ -1,0 +1,47 @@
+version: "3.9"
+
+# ...==================== Input de Dados ====================...
+
+# Dados do cliente
+x-client_data: &client_data
+  PHP_TZ: America/Recife
+  TZ: America/Recife
+
+# ...================= Variáveis de Ambiente =================...
+
+# QuestDB
+x-questdb_params: &questdb_params
+  <<: *client_data
+  QDB_PG_USER: admin
+  QDB_PG_PASSWORD: mwsolucoesDB
+  QDB_PG_READONLY_USER_ENABLED: "true"
+  QDB_PG_READONLY_USER: mwsolucoes
+  QDB_PG_READONLY_PASSWORD: mwsolucoesDB
+  QDB_PG_SELECT_CACHE_ENABLED: "false"
+  QDB_LOG_W_STDOUT_LEVEL: ERROR
+  QDB_CAIRO_WRITER_DATA_APPEND_PAGE_SIZE: 1M
+  QDB_CAIRO_WRITER_DATA_INDEX_VALUE_APPEND_PAGE_SIZE: 1M
+
+# ...==================== Serviços ====================...
+
+services:
+  questdb:
+    image: questdb/questdb:7.4.0
+    environment:
+      <<: *questdb_params
+    networks:
+      - mwsolucoes
+    ports:
+      - "9000:9000"
+      - "9009:9009"
+      - "8812:8812"
+      - "9003:9003"
+    volumes:
+      - questdb:/var/lib/questdb
+
+networks:
+  mwsolucoes:
+    external: true
+
+volumes:
+  questdb:

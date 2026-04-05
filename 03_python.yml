@@ -1,0 +1,30 @@
+version: "3.9"
+
+# ...==================== Input de Dados ====================...
+
+# Dados do cliente
+x-client_data: &client_data
+  PHP_TZ: America/Recife
+  TZ: America/Recife
+
+# ...================= Variáveis de Ambiente =================...
+
+services:
+  python:
+    image: python:3.10.2-slim
+    networks:
+      - mwsolucoes
+    environment:
+      <<: *client_data
+      PYTHONUNBUFFERED: 1
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: bash -c "pip install requests unidecode questdb ingress && tail -f /dev/null"
+
+networks:
+  mwsolucoes:
+    external: true
+
+volumes:
+  python:
